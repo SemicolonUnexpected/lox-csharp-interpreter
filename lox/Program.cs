@@ -1,29 +1,52 @@
-﻿internal class Program {
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+
+namespace Lox;
+
+internal class Program {
+    private static bool _hadError = false;
+    
     private static void Main(string[] args) {
         if (args.Length == 1) RunFile(args[0]);
         else if (args.Length == 0) RunPrompt();
         else {
             Console.WriteLine("Usage: lox [script]");
         }
+    }
 
-        static void RunFile(string file) {
-            string text = File.ReadAllText(file);
-            Run(text);
-        }
+    private static void RunFile(string file) {
+        string text = File.ReadAllText(file);
+        Run(text);
 
-        static void RunPrompt() {
-            while (true) {
-                Console.Write(">>> ");
-                string? line = Console.ReadLine();
-                if (line is null) {
-                    Console.WriteLine();
-                    break;
-                }
-                Run(line);
+        if (_hadError) Environment.Exit(65);
+    }
+
+    private static void RunPrompt() {
+        while (true) {
+            Console.Write(">>> ");
+            string? line = Console.ReadLine();
+            if (line is null) {
+                Console.WriteLine();
+                break;
             }
+            Run(line);
         }
+    }
 
-        static void Run(string source) {
-            Scanner scanner = new(source);
+    private static void Run(string source) {
+        Lexer scanner = new(source);
+
+        List<Token> tokens = scanner.Scan();
+
+        foreach (Token token in tokens) Console.WriteLine(token);
+    }
+
+    private static void Error(int line, string message) {
+        Report(line, "", message);
+    }
+
+    private static void Report(int line, string where, string message) {
+        throw new NotImplementedException();
     }
 }
