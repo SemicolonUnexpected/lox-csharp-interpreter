@@ -1,0 +1,15 @@
+/home/mgrac/repos/lox-csharp-interpreter/lox/bin/Debug/net8.0/lox
+/home/mgrac/repos/lox-csharp-interpreter/lox/bin/Debug/net8.0/lox.deps.json
+/home/mgrac/repos/lox-csharp-interpreter/lox/bin/Debug/net8.0/lox.runtimeconfig.json
+/home/mgrac/repos/lox-csharp-interpreter/lox/bin/Debug/net8.0/lox.dll
+/home/mgrac/repos/lox-csharp-interpreter/lox/bin/Debug/net8.0/lox.pdb
+/home/mgrac/repos/lox-csharp-interpreter/lox/obj/Debug/net8.0/lox.GeneratedMSBuildEditorConfig.editorconfig
+/home/mgrac/repos/lox-csharp-interpreter/lox/obj/Debug/net8.0/lox.AssemblyInfoInputs.cache
+/home/mgrac/repos/lox-csharp-interpreter/lox/obj/Debug/net8.0/lox.AssemblyInfo.cs
+/home/mgrac/repos/lox-csharp-interpreter/lox/obj/Debug/net8.0/lox.csproj.CoreCompileInputs.cache
+/home/mgrac/repos/lox-csharp-interpreter/lox/obj/Debug/net8.0/lox.sourcelink.json
+/home/mgrac/repos/lox-csharp-interpreter/lox/obj/Debug/net8.0/lox.dll
+/home/mgrac/repos/lox-csharp-interpreter/lox/obj/Debug/net8.0/refint/lox.dll
+/home/mgrac/repos/lox-csharp-interpreter/lox/obj/Debug/net8.0/lox.pdb
+/home/mgrac/repos/lox-csharp-interpreter/lox/obj/Debug/net8.0/lox.genruntimeconfig.cache
+/home/mgrac/repos/lox-csharp-interpreter/lox/obj/Debug/net8.0/ref/lox.dll
