@@ -41,8 +41,26 @@ internal class Lexer {
             case '+' : AddToken(PLUS); break;
             case ';' : AddToken(SEMICOLON); break;
             case '*' : AddToken(ASTERISK); break;
+            case '!' : AddToken(Match('=') ? BANG_EQUAL : BANG); break;
+            case '=' : AddToken(Match('=') ? EQUAL_EQUAL : EQUAL); break;
+            case '<' : AddToken(Match('=') ? LESS_EQUAL : LESS); break;
+            case '>' : AddToken(Match('=') ? GREATER_EQUAL : GREATER); break;
+            case '/':
+                if (Match('/')) {
+                    while (Peek() != '\n' && !AtEnd()) Next();
+                }
+                else AddToken(SLASH);
+                break;
+
+            case ' ' :
+            case '\r' :
+            case '\t' :
+                break;
+
+            case '\n' : _line++; break;
             default:
-                throw new LoxSyntaxException("Unexpected character", _line); 
+                Program.Error(_line, "Unexpected character");
+                break;
         }
     }
     
@@ -51,12 +69,38 @@ internal class Lexer {
     // Lexer movements
     private bool AtEnd() => _current >= _source.Length;
     private char Advance() => _source[_current++];
+    private void Next(int step = 1) => _current += step;
+    private bool Match(char expected) {
+        if (AtEnd() || _source[_current] != expected) return false;
+        _current++;
+        return true;
+    }
+    private char? Peek() => AtEnd() ? null : _source[_current]; 
+
 
     // Token manipulation
     private void AddToken(TokenType type) => AddToken(type, null);
     private void AddToken(TokenType type, object? literal) {
         string lexeme = _source[_start.._current];
         _tokens.Add(new Token(type, lexeme, literal, _line));
+    }
+
+    // Literals
+    private void String() {
+        while (Peek() != '"' && !AtEnd()) {
+            if (Peek() == '\n') _line++;
+            Next();
+
+            if (AtEnd()) {
+                Program.Error(_line, "String literal not terminated");
+                return;
+            }
+        }
+
+        Next();
+
+        string value = _source.Substring(_start + 1, _current - 1);
+        AddToken(STRING, value);
     }
 
     #endregion

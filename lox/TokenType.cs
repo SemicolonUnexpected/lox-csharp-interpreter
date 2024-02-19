@@ -16,13 +16,13 @@ enum TokenType {
 
     // ONE OR TWO CHARACTERS
     BANG,
-    BANGEQUAL,
+    BANG_EQUAL,
     EQUAL,
-    EQUALEQUAL,
+    EQUAL_EQUAL,
     GREATER,
     LESS,
-    GREATEREQUAL,
-    LESSEQUAL,
+    GREATER_EQUAL,
+    LESS_EQUAL,
 
     // LITERAL
     IDENTIFIER,

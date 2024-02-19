@@ -42,7 +42,7 @@ internal class Program {
         foreach (Token token in tokens) Console.WriteLine(token);
     }
 
-    private static void Error(int line, string message) {
+    public static void Error(int line, string message) {
         Report(line, "", message);
     }
 
