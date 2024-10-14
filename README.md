@@ -1,6 +1,6 @@
 # lox-csharp-interpreter
 
-An implemetation of an interpreter for the lox language from the book Crafting Interpreters
+An implemetation of an interpreter for the lox language based on the book [Crafting Interpreters](https://www.craftinginterpreters.com/)
 
 ## Sources
 
