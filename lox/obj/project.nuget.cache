@@ -1,10 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "O9tqNaCQXjbjiuRoYnfCDGhMfCh27ykBvjkBux7PF2CY4/T8srIBG4QIp5ZLVk1lt8Zd5gqnU9qjL0+iDUJ3Jw==",
+  "dgSpecHash": "VXuROk5sAX8=",
   "success": true,
   "projectFilePath": "/home/mgrac/repos/lox-csharp-interpreter/lox/lox.csproj",
-  "expectedPackageFiles": [
-    "/home/mgrac/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.1/microsoft.aspnetcore.app.ref.8.0.1.nupkg.sha512"
-  ],
+  "expectedPackageFiles": [],
   "logs": []
 }

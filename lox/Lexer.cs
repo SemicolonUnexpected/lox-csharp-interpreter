@@ -57,9 +57,23 @@ internal class Lexer {
             case '\t' :
                 break;
 
+            case 'o':
+                if (Match('r')) AddToken(OR);
+                break;
+
             case '\n' : _line++; break;
+
+            
             default:
-                Program.Error(_line, "Unexpected character");
+                if(Char.IsAsciiDigit(c)) {
+                    Number();
+                }
+                else if(IsAlpha(c)) {
+                    Identifier();
+                }
+                else {
+                    Program.Error(_line, "Unexpected character");
+                }
                 break;
         }
     }
@@ -75,8 +89,7 @@ internal class Lexer {
         _current++;
         return true;
     }
-    private char? Peek() => AtEnd() ? null : _source[_current]; 
-
+    private char? Peek(int lookahead = 0) => _current + lookahead >= _source.Length ? null : _source[_current + lookahead]; 
 
     // Token manipulation
     private void AddToken(TokenType type) => AddToken(type, null);
@@ -84,6 +97,10 @@ internal class Lexer {
         string lexeme = _source[_start.._current];
         _tokens.Add(new Token(type, lexeme, literal, _line));
     }
+
+    // Helpers
+    private bool IsAlpha(char c) => Char.IsAsciiLetter(c) || c =='_';
+    private bool IsAlphaNumeric(char c) => IsAlpha(c) || Char.IsAsciiDigit(c);
 
     // Literals
     private void String() {
@@ -103,5 +120,44 @@ internal class Lexer {
         AddToken(STRING, value);
     }
 
+    private void Number() {
+        while(Peek() is not null && Char.IsAsciiDigit((Char)Peek()!)) Next();
+
+        if(Peek() is not null && Peek() == '.' && Char.IsAsciiDigit((Char)Peek(1)!)) Next();
+
+        while(Peek() is not null && Char.IsAsciiDigit((Char)Peek()!)) Next();
+
+        AddToken(NUMBER, Double.Parse(_source.Substring(_start, _current - _start)));
+    }
+
+    private void Identifier() {
+        while(Peek() is not null && IsAlphaNumeric((Char)Peek()!)) Next();
+
+        string text = _source.SubString(_start, _current - _start);
+        _reservedIdentifiers.TryGetValue(text, out type);
+            
+        AddToken(type);
+    }
+
     #endregion
+
+    private readonly Dictionary<string, TokenType> _reservedIdentifiers = new() {
+        { "and", AND },
+        { "class", CLASS },
+        { "else", ELSE },
+        { "false", FALSE },
+        { "fun", FUNCTION },
+        { "for", FOR },
+        { "if", IF },
+        { "nil", NIL },
+        { "or", OR },
+        { "print", PRINT },
+        { "return", RETURN },
+        { "super", SUPER },
+        { "this", THIS },
+        { "true", TRUE },
+        { "var", VAR },
+        { "while", WHILE },
+    };
+
 }

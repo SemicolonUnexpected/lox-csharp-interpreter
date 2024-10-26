@@ -34,7 +34,7 @@ enum TokenType {
     CLASS,
     ELSE,
     FALSE,
-    FUN,
+    FUNCTION,
     FOR,
     IF,
     NIL,
