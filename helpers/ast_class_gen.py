@@ -15,16 +15,17 @@ def create_class(class_name: str, fields: list):
     # Generate the text for the file
     # Double braces ("{{" and "}}") are used to escape
     # braces in a format string
-    text = """namespace Lox.Ast;
-
-internal class {0} : IExpression {{
-{1}
-
-    public {0}({2}) {{
-{3}
-    }}
-}}
-""".format(
+    text = (
+        "namespace Lox.Ast;\n"
+        "\n"
+        "internal class {0} : IExpression {{\n"
+        "{1}\n"
+        "\n"
+        "    public {0}({2}) {{\n"
+        "{3}\n"
+        "    }}\n"
+        "}}"
+    ).format(
         class_name,
         "\n".join(
             [
@@ -37,6 +38,7 @@ internal class {0} : IExpression {{
             [f"        _{field_name} = {field_name};" for (_, field_name) in fields]
         ),
     )
+    print(text)
 
     # Write to the file
     file = open(f"output/{class_name}.cs", "w")
@@ -44,8 +46,18 @@ internal class {0} : IExpression {{
     file.close()
 
 
-def generate_visitor_pattern():
-    pass
+def generate_visitor_interface():
+    # Generate the text for the file
+    text = (
+        "interface Visitor<T> {\n"
+        + "".join([f"T Visit{field_name}Expression({fie}" for (cs_type, field_name) in classes)
+        + "}"
+    )
+
+    # Write to the file
+    file = open("output/IVisitor.cs", "w")
+    file.write(text)
+    file.close()
 
 
 main()
