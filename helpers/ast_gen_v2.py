@@ -1,20 +1,20 @@
 classes = [
-    ["Binary", [["Expression", "left"], ["Token", "token"], ["Expression", "right"]]],
-    ["Unary", [["Expression", "expression"], ["Token", "token"]]],
-    ["Literal", [["object", "value"]]],
-    ["Grouping", [["Expression", "expression"]]],
+    ["Binary", [["Expr", "left"], ["Token", "token"], ["Expr", "right"]]],
+    ["Unary", [["Expr", "expression"], ["Token", "token"]]],
+    ["Literal", [["object?", "value"]]],
+    ["Grouping", [["Expr", "expression"]]],
 ]
 
 
 def main():
-    text = ["namespace Lox;", "", "internal abstract class Expression {"]
+    text = ["namespace Lox;", "", "internal abstract class Expr {"]
     text.append(get_visitor())
     for name, fields in classes:
         text.append(get_class(name, fields))
     text += ["    public abstract T Accept<T>(IVisitor<T> visitor);", "}"]
 
     # print("\n".join(text))
-    file = open("output/Expression.cs", "w")
+    file = open("output/Expr.cs", "w")
     file.write("\n".join(text))
     file.close()
 
@@ -24,7 +24,7 @@ def get_visitor():
         "    public interface IVisitor<T> {\n",
         "".join(
             [
-                f"        T Visit{cs_class[0]}Expression({cs_class[0]} {cs_class[0].lower()});\n"
+                f"        T Visit{cs_class[0]}Expr({cs_class[0]} {cs_class[0].lower()});\n"
                 for cs_class in classes
             ]
         ),
@@ -36,7 +36,7 @@ def get_visitor():
 
 def get_class(name, fields):
     text = [
-        f"    public class {name} : Expression {{\n",
+        f"    public class {name} : Expr {{\n",
         "".join(
             [
                 f"        public {cs_type} {field.title()} {{ get; private set; }}\n"
@@ -49,7 +49,7 @@ def get_class(name, fields):
         "".join([f"            {field.title()} = {field};\n" for (_, field) in fields]),
         "        }\n\n",
         "        public override T Accept<T>(IVisitor<T> visitor) {\n",
-        f"            return visitor.Visit{name}Expression(this);\n",
+        f"            return visitor.Visit{name}Expr(this);\n",
         "        }\n",
         "    }\n",
     ]
