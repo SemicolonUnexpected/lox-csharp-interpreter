@@ -3,11 +3,13 @@ ast_classes = [
     ["Unary", [["Expr", "expression"], ["Token", "token"]]],
     ["Literal", [["object?", "value"]]],
     ["Grouping", [["Expr", "expression"]]],
+    ["Variable", [["Token", "name"]]],
 ]
 
 stmt_classes = [
     ["Print", [["Expr", "expression"]]],
-    ["Expression", [["Expr", "LoxExpression"]]],
+    ["Expression", [["Expr", "loxExpression"]]],
+    ["Var", [["Token", "name"], ["Expr", "initialiser"]]],
 ]
 
 
@@ -40,7 +42,7 @@ def get_visitor(class_name, classes):
         "    public interface IVisitor<T> {\n",
         "".join(
             [
-                f"        T Visit{cs_class[0]}{class_name}({cs_class[0]} {cs_class[0].lower()});\n"
+                f"        T Visit{cs_class[0]}{class_name}({cs_class[0]} {cs_class[0][0].lower() + cs_class[0][1:]});\n"
                 for cs_class in classes
             ]
         ),
@@ -55,14 +57,19 @@ def get_class(class_name, name, fields):
         f"    public class {name} : {class_name} {{\n",
         "".join(
             [
-                f"        public {cs_type} {field.title()} {{ get; private set; }}\n"
+                f"        public {cs_type} {field[0].upper() + field[1:]} {{ get; private set; }}\n"
                 for (cs_type, field) in fields
             ]
         ),
         f"\n        public {name}(",
         ", ".join([f"{cs_type} {field}" for (cs_type, field) in fields]),
         ") {\n",
-        "".join([f"            {field.title()} = {field};\n" for (_, field) in fields]),
+        "".join(
+            [
+                f"            {field[0].upper() + field[1:]} = {field};\n"
+                for (_, field) in fields
+            ]
+        ),
         "        }\n\n",
         "        public override T Accept<T>(IVisitor<T> visitor) {\n",
         f"            return visitor.Visit{name}{class_name}(this);\n",

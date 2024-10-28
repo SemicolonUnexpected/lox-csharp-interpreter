@@ -39,4 +39,8 @@ internal class AstPrinter : Expr.IVisitor<string> {
     public string VisitUnaryExpr(Unary unary) {
         return Parenthesise(unary.Token.Lexeme, unary.Expression);
     }
+
+    public string VisitVariableExpr(Variable variable) {
+        return Parenthesise(variable.Name.Lexeme);
+    }
 }
