@@ -6,6 +6,9 @@ namespace Lox;
 
 internal class Program {
     private static bool _hadError = false;
+    private static bool _hadRuntimeError = false;
+
+    private static readonly Interpreter interpreter = new();
 
     private static void Main(string[] args) {
         if (args.Length == 1)
@@ -21,8 +24,8 @@ internal class Program {
         string text = File.ReadAllText(file);
         Run(text);
 
-        if (_hadError)
-            Environment.Exit(65);
+        if (_hadError) Environment.Exit(65);
+        if (_hadRuntimeError) Environment.Exit(70);
     }
 
     private static void RunPrompt() {
@@ -44,16 +47,19 @@ internal class Program {
 
         List<Token> tokens = scanner.Scan();
 
-        //foreach (Token token in tokens)
-        //     Console.WriteLine(token);
+        // Show me each of the tokens that the lexer has 'lexed'
+        // foreach (Token token in tokens) Console.WriteLine(token);
 
         Parser parser = new(tokens);
-        Expr expression = parser.Parse();
+        List<Stmt> statements = parser.Parse();
 
         if (_hadError) return;
 
+        // Print out the AST for debugging purposes
         AstPrinter printer = new();
-        printer.PrintAst(expression);
+        // foreach (Stmt stmt in statements) Console.WriteLine($"Abstract syntax tree : {printer.GetAst(stmt.)}");
+
+        interpreter.Interpret(statements);
     }
 
     public static void Error(int line, string message) {
@@ -71,6 +77,11 @@ internal class Program {
 
     private static void Report(int line, string where, string message) {
         Console.WriteLine($"[Line {line}] {where} : {message}");
+        _hadError = true;
+    }
+
+    internal static void RuntimeError(LoxRuntimeException exception) {
+        Console.WriteLine($"[Line {exception.Token.Line}] at '{exception.Token.Lexeme}' : {exception.Message}");
         _hadError = true;
     }
 }

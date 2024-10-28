@@ -1,30 +1,46 @@
-classes = [
+ast_classes = [
     ["Binary", [["Expr", "left"], ["Token", "token"], ["Expr", "right"]]],
     ["Unary", [["Expr", "expression"], ["Token", "token"]]],
     ["Literal", [["object?", "value"]]],
     ["Grouping", [["Expr", "expression"]]],
 ]
 
+stmt_classes = [
+    ["Print", [["Expr", "expression"]]],
+    ["Expression", [["Expr", "LoxExpression"]]],
+]
+
 
 def main():
-    text = ["namespace Lox;", "", "internal abstract class Expr {"]
-    text.append(get_visitor())
-    for name, fields in classes:
-        text.append(get_class(name, fields))
-    text += ["    public abstract T Accept<T>(IVisitor<T> visitor);", "}"]
-
-    # print("\n".join(text))
+    # Define the Expr.cs class
+    text = gen_visitor_pattern("Expr", ast_classes)
     file = open("output/Expr.cs", "w")
-    file.write("\n".join(text))
+    file.write(text)
+    file.close()
+
+    # Define the Stmt.cs class
+    text = gen_visitor_pattern("Stmt", stmt_classes)
+    file = open("output/Stmt.cs", "w")
+    file.write(text)
     file.close()
 
 
-def get_visitor():
+def gen_visitor_pattern(class_name, contents):
+    text = ["namespace Lox;", "", f"internal abstract class {class_name} {{"]
+    text.append(get_visitor(class_name, contents))
+    for name, fields in contents:
+        text.append(get_class(class_name, name, fields))
+    text += ["    public abstract T Accept<T>(IVisitor<T> visitor);", "}"]
+
+    return "\n".join(text)
+
+
+def get_visitor(class_name, classes):
     text = [
         "    public interface IVisitor<T> {\n",
         "".join(
             [
-                f"        T Visit{cs_class[0]}Expr({cs_class[0]} {cs_class[0].lower()});\n"
+                f"        T Visit{cs_class[0]}{class_name}({cs_class[0]} {cs_class[0].lower()});\n"
                 for cs_class in classes
             ]
         ),
@@ -34,9 +50,9 @@ def get_visitor():
     return "".join(text)
 
 
-def get_class(name, fields):
+def get_class(class_name, name, fields):
     text = [
-        f"    public class {name} : Expr {{\n",
+        f"    public class {name} : {class_name} {{\n",
         "".join(
             [
                 f"        public {cs_type} {field.title()} {{ get; private set; }}\n"
@@ -49,7 +65,7 @@ def get_class(name, fields):
         "".join([f"            {field.title()} = {field};\n" for (_, field) in fields]),
         "        }\n\n",
         "        public override T Accept<T>(IVisitor<T> visitor) {\n",
-        f"            return visitor.Visit{name}Expr(this);\n",
+        f"            return visitor.Visit{name}{class_name}(this);\n",
         "        }\n",
         "    }\n",
     ]

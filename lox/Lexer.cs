@@ -63,6 +63,7 @@ internal class Lexer {
 
             case '\n': _line++; break;
 
+            case '"': String(); break;
 
             default:
                 if (Char.IsAsciiDigit(c)) {
@@ -116,7 +117,7 @@ internal class Lexer {
 
         Next();
 
-        string value = _source.Substring(_start + 1, _current - 1);
+        string value = _source.Substring(_start + 1, _current - _start - 2);
         AddToken(STRING, value);
     }
 

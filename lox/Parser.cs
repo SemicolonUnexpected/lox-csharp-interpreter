@@ -14,13 +14,12 @@ internal class Parser {
         _tokens = tokens;
     }
 
-    public Expr Parse() {
-        try {
-            return Expression();
+    public List<Stmt> Parse() {
+        List<Stmt> statements = new();
+        while (!IsAtEnd()) {
+            statements.Add(Statement());
         }
-        catch (ParseError error) {
-            return null;
-        }
+        return statements;
     }
 
     private Expr Expression() => Equality();
@@ -69,8 +68,6 @@ internal class Parser {
         return expression;
     }
     private Expr Unary() {
-        Expr expression = Primary();
-
         if (Match(BANG, MINUS)) {
             Token op = Previous();
             Expr right = Unary();
@@ -78,7 +75,7 @@ internal class Parser {
             return new Expr.Unary(right, op);
         }
 
-        return expression;
+        return Primary();
     }
     private Expr Primary() {
         if (Match(FALSE)) return new Expr.Literal(false);
@@ -141,10 +138,34 @@ internal class Parser {
         throw Error(Peek(), message);
     }
 
+    #endregion
+
+    #region Statemnts
+
+    private Stmt Statement() {
+        if (Match(PRINT)) return PrintStatement();
+
+        return ExpressionStatement();
+    }
+
+    private Stmt PrintStatement() {
+        Expr value = Expression();
+
+        Consume(SEMICOLON, "Expected ';' after value.");
+        return new Stmt.Print(value);
+    }
+
+    private Stmt ExpressionStatement() {
+        Expr expression = Expression();
+
+        Consume(SEMICOLON, "Expected ';' after expression.");
+        return new Stmt.Expression(expression);
+    }
+
+    #endregion
+
     private ParseError Error(Token token, string message) {
         Program.Error(token.Line, message);
         return new ParseError();
     }
-
-    #endregion
 }
