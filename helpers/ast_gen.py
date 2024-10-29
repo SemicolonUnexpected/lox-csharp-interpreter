@@ -9,7 +9,9 @@ ast_classes = [
 
 stmt_classes = [
     ["Print", [["Expr", "loxExpression"]]],
+    ["If", [["Expr", "condition"], ["Stmt", "thenBranch"], ["Stmt", "elseBranch"]]],
     ["Expression", [["Expr", "loxExpression"]]],
+    ["Block", [["List<Stmt>", "statements"]]],
     ["Var", [["Token", "name"], ["Expr", "initialiser"]]],
 ]
 
@@ -23,6 +25,8 @@ def main():
 
     # Define the Stmt.cs class
     text = gen_visitor_pattern("Stmt", stmt_classes)
+    # Prepend usings
+    text = "using System.Collections.Generic;\n\n" + text
     file = open("output/Stmt.cs", "w")
     file.write(text)
     file.close()

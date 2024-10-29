@@ -1,9 +1,13 @@
-using System;
 using System.Collections.Generic;
 
 namespace Lox;
 
 internal class Environment {
+    public Environment? Enclosing { get; init; }
+
+    public Environment() => Enclosing = null;
+    public Environment(Environment enclosing) => Enclosing = enclosing;
+
     private readonly Dictionary<string, object> _values = new();
 
     public void Define(string name, object value) {
@@ -15,17 +19,20 @@ internal class Environment {
             return value;
         }
 
+        if (Enclosing is not null) return Enclosing.Get(identifier);
+
         throw new LoxRuntimeException("Variable not defined", identifier);
     }
 
     internal void Assign(Token name, object value) {
-        if (_values.ContainsKey(name.Lexeme)) _values[name.Lexeme] = value;
-        else throw new LoxRuntimeException("Undefined variable", name);
-    }
-
-    public void LookInside() {
-        foreach (var item in _values) {
-            System.Console.WriteLine(item);
+        if (_values.ContainsKey(name.Lexeme)) {
+            _values[name.Lexeme] = value;
+            return;
         }
+        if (Enclosing is not null) {
+            Enclosing.Assign(name, value);
+            return;
+        }
+        throw new LoxRuntimeException("Undefined variable", name);
     }
 }

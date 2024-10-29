@@ -165,8 +165,14 @@ internal class Parser {
 
     private Stmt Statement() {
         if (Match(PRINT)) return PrintStatement();
+        if (Match(LEFT_BRACE)) return new Stmt.Block(Block());
+        if (Match(IF)) return IfStatement();
 
         return ExpressionStatement();
+    }
+
+    private Stmt IfStatement() {
+        throw new NotImplementedException();
     }
 
     private Stmt PrintStatement() {
@@ -207,6 +213,17 @@ internal class Parser {
 
         Consume(SEMICOLON, "Semicolon expected");
         return new Stmt.Var(name, initialiser);
+    }
+
+    private List<Stmt> Block() {
+        List<Stmt> statements = new();
+
+        while (!Check(RIGHT_BRACE) && !IsAtEnd()) {
+            statements.Add(Declaration());
+        }
+
+        Consume(RIGHT_BRACE, "Expect '}' after block");
+        return statements;
     }
 
     #endregion

@@ -4,7 +4,7 @@ using static Lox.TokenType;
 namespace Lox;
 
 class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object> {
-    private readonly Environment _env = new();
+    private Environment _env = new();
 
     public void Interpret(List<Stmt> statements) {
         try {
@@ -15,7 +15,6 @@ class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object> {
         catch (LoxRuntimeException exception) {
             Program.RuntimeError(exception);
         }
-        _env.LookInside();
     }
 
     private void Execute(Stmt statement) {
@@ -151,6 +150,23 @@ class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object> {
         _env.Assign(assign.Name, value);
         return value;
     }
+
+    public object VisitBlockStmt(Stmt.Block block) {
+        ExecuteBlock(block.Statements, new Environment(_env));
+        return null;
+    }
+
+    private void ExecuteBlock(List<Stmt> statements, Environment environment) {
+        Environment previous = _env;
+        try {
+            _env = environment;
+            foreach (Stmt statement in statements) Execute(statement);
+        }
+        finally {
+            _env = previous;
+        }
+    }
+
 
     #endregion
 }
