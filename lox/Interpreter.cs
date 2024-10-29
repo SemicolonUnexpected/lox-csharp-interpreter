@@ -4,6 +4,8 @@ using static Lox.TokenType;
 namespace Lox;
 
 class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object> {
+    private readonly Environment _env = new();
+
     public void Interpret(List<Stmt> statements) {
         try {
             foreach (Stmt statement in statements) {
@@ -13,6 +15,7 @@ class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object> {
         catch (LoxRuntimeException exception) {
             Program.RuntimeError(exception);
         }
+        _env.LookInside();
     }
 
     private void Execute(Stmt statement) {
@@ -20,6 +23,7 @@ class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object> {
     }
 
     #region Expressions
+
     public object VisitBinaryExpr(Expr.Binary binary) {
         object left = Evaluate(binary.Left);
         object right = Evaluate(binary.Right);
@@ -88,6 +92,10 @@ class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object> {
         return null;
     }
 
+    public object VisitVariableExpr(Expr.Variable variable) {
+        return _env.Get(variable.Name);
+    }
+
     #endregion
 
     private object Evaluate(Expr expression) {
@@ -125,9 +133,23 @@ class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object> {
     }
 
     public object VisitPrintStmt(Stmt.Print stmt) {
-        object value = Evaluate(stmt.Expression);
+        object value = Evaluate(stmt.LoxExpression);
         Console.WriteLine(Stringify(value));
         return null;
+    }
+
+    public object VisitVarStmt(Stmt.Var var) {
+        object value = null;
+        if (var.Initialiser is not null) value = Evaluate(var.Initialiser);
+
+        _env.Define(var.Name.Lexeme, value);
+        return null;
+    }
+
+    public object VisitAssignExpr(Expr.Assign assign) {
+        object value = Evaluate(assign.Value);
+        _env.Assign(assign.Name, value);
+        return value;
     }
 
     #endregion

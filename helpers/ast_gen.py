@@ -4,10 +4,11 @@ ast_classes = [
     ["Literal", [["object?", "value"]]],
     ["Grouping", [["Expr", "expression"]]],
     ["Variable", [["Token", "name"]]],
+    ["Assign", [["Token", "name"], ["Expr", "value"]]],
 ]
 
 stmt_classes = [
-    ["Print", [["Expr", "expression"]]],
+    ["Print", [["Expr", "loxExpression"]]],
     ["Expression", [["Expr", "loxExpression"]]],
     ["Var", [["Token", "name"], ["Expr", "initialiser"]]],
 ]

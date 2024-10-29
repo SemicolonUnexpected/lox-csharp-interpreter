@@ -5,7 +5,7 @@ using static Lox.TokenType;
 namespace Lox;
 
 internal class Parser {
-    private class ParseError : Exception { };
+    private class LoxParseError : Exception { };
 
     private readonly List<Token> _tokens;
     private int _current = 0;
@@ -17,12 +17,28 @@ internal class Parser {
     public List<Stmt> Parse() {
         List<Stmt> statements = new();
         while (!IsAtEnd()) {
-            statements.Add(Statement());
+            statements.Add(Declaration());
         }
         return statements;
     }
 
-    private Expr Expression() => Equality();
+    private Expr Expression() => Assignment();
+    private Expr Assignment() {
+        Expr expression = Equality();
+
+        if (Match(EQUAL)) {
+            Token equal = Previous();
+            Expr value = Assignment();
+
+            if (expression is Expr.Variable variable) {
+                Token name = variable.Name;
+                return new Expr.Assign(name, value);
+            }
+            Program.Error(equal, "Invalid assignment target");
+        }
+
+        return expression;
+    }
     private Expr Equality() {
         Expr expression = Comparison();
 
@@ -90,6 +106,11 @@ internal class Parser {
             return new Expr.Grouping(expression);
         }
 
+        if (Match(IDENTIFIER)) {
+            Console.WriteLine("Its an identifier! : ", Previous().Literal);
+            return new Expr.Variable(Previous());
+        }
+
         throw Error(Peek(), "Expected expression");
     }
 
@@ -128,7 +149,7 @@ internal class Parser {
         return false;
     }
     private bool Check(TokenType type) => IsAtEnd() ? false : Peek().Type == type;
-    private Token Advance() => IsAtEnd() ? Previous() : _tokens[++_current];
+    private Token Advance() => IsAtEnd() ? Previous() : _tokens[_current++];
     private Token Previous() => _tokens[_current - 1];
     private Token Peek() => _tokens[_current];
     private bool IsAtEnd() => Peek().Type == EOF;
@@ -162,10 +183,36 @@ internal class Parser {
         return new Stmt.Expression(expression);
     }
 
+    private Stmt Declaration() {
+        try {
+            if (Match(VAR)) {
+                System.Console.WriteLine("Found the VAR");
+                return VarDeclaration();
+            }
+
+            return Statement();
+        }
+        catch (LoxParseError error) {
+            Sychronise();
+            return null;
+        }
+    }
+
+    private Stmt VarDeclaration() {
+        Token name = Consume(IDENTIFIER, "Expected variable name.");
+        System.Console.WriteLine(name);
+
+        Expr initialiser = null;
+        if (Match(EQUAL)) initialiser = Expression();
+
+        Consume(SEMICOLON, "Semicolon expected");
+        return new Stmt.Var(name, initialiser);
+    }
+
     #endregion
 
-    private ParseError Error(Token token, string message) {
+    private LoxParseError Error(Token token, string message) {
         Program.Error(token.Line, message);
-        return new ParseError();
+        return new LoxParseError();
     }
 }

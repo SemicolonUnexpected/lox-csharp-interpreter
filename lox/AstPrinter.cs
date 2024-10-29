@@ -43,4 +43,8 @@ internal class AstPrinter : Expr.IVisitor<string> {
     public string VisitVariableExpr(Variable variable) {
         return Parenthesise(variable.Name.Lexeme);
     }
+
+    public string VisitAssignExpr(Assign assign) {
+        throw new NotImplementedException();
+    }
 }

@@ -8,10 +8,10 @@ internal abstract class Stmt {
     }
 
     public class Print : Stmt {
-        public Expr Expression { get; private set; }
+        public Expr LoxExpression { get; private set; }
 
-        public Print(Expr expression) {
-            Expression = expression;
+        public Print(Expr loxExpression) {
+            LoxExpression = loxExpression;
         }
 
         public override T Accept<T>(IVisitor<T> visitor) {

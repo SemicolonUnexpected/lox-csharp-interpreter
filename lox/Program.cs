@@ -24,8 +24,8 @@ internal class Program {
         string text = File.ReadAllText(file);
         Run(text);
 
-        if (_hadError) Environment.Exit(65);
-        if (_hadRuntimeError) Environment.Exit(70);
+        if (_hadError) System.Environment.Exit(65);
+        if (_hadRuntimeError) System.Environment.Exit(70);
     }
 
     private static void RunPrompt() {
@@ -48,7 +48,7 @@ internal class Program {
         List<Token> tokens = scanner.Scan();
 
         // Show me each of the tokens that the lexer has 'lexed'
-        // foreach (Token token in tokens) Console.WriteLine(token);
+        foreach (Token token in tokens) Console.WriteLine(token);
 
         Parser parser = new(tokens);
         List<Stmt> statements = parser.Parse();
@@ -60,6 +60,8 @@ internal class Program {
         // foreach (Stmt stmt in statements) Console.WriteLine($"Abstract syntax tree : {printer.GetAst(stmt.)}");
 
         interpreter.Interpret(statements);
+
+
     }
 
     public static void Error(int line, string message) {

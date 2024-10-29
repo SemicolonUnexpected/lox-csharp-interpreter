@@ -7,6 +7,7 @@ internal abstract class Expr {
         T VisitLiteralExpr(Literal literal);
         T VisitGroupingExpr(Grouping grouping);
         T VisitVariableExpr(Variable variable);
+        T VisitAssignExpr(Assign assign);
     }
 
     public class Binary : Expr {
@@ -72,6 +73,20 @@ internal abstract class Expr {
 
         public override T Accept<T>(IVisitor<T> visitor) {
             return visitor.VisitVariableExpr(this);
+        }
+    }
+
+    public class Assign : Expr {
+        public Token Name { get; private set; }
+        public Expr Value { get; private set; }
+
+        public Assign(Token name, Expr value) {
+            Name = name;
+            Value = value;
+        }
+
+        public override T Accept<T>(IVisitor<T> visitor) {
+            return visitor.VisitAssignExpr(this);
         }
     }
 
