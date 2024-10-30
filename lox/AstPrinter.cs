@@ -45,10 +45,10 @@ internal class AstPrinter : Expr.IVisitor<string> {
     }
 
     public string VisitAssignExpr(Assign assign) {
-        throw new NotImplementedException();
+        return $"( assign {assign.Value} {assign.Name.Lexeme} )";
     }
 
     public string VisitLogicalExpr(Logical logical) {
-        throw new NotImplementedException();
+        return $"( assign {logical.Op} {logical.Left} {logical.Right} )";
     }
 }
