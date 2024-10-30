@@ -5,10 +5,11 @@ namespace Lox;
 internal abstract class Stmt {
     public interface IVisitor<T> {
         T VisitPrintStmt(Print print);
-        T VisitIfStmt(If if);
+        T VisitIfStmt(If ifStatement);
         T VisitExpressionStmt(Expression expression);
         T VisitBlockStmt(Block block);
         T VisitVarStmt(Var var);
+        T VisitWhileStmt(While whileStatement);
     }
 
     public class Print : Stmt {
@@ -74,6 +75,20 @@ internal abstract class Stmt {
 
         public override T Accept<T>(IVisitor<T> visitor) {
             return visitor.VisitVarStmt(this);
+        }
+    }
+
+    public class While : Stmt {
+        public Expr Condition { get; private set; }
+        public Stmt Body { get; private set; }
+
+        public While(Expr condition, Stmt body) {
+            Condition = condition;
+            Body = body;
+        }
+
+        public override T Accept<T>(IVisitor<T> visitor) {
+            return visitor.VisitWhileStmt(this);
         }
     }
 

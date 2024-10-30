@@ -48,7 +48,7 @@ internal class Program {
         List<Token> tokens = scanner.Scan();
 
         // Show me each of the tokens that the lexer has 'lexed'
-        foreach (Token token in tokens) Console.WriteLine(token);
+        // foreach (Token token in tokens) Console.WriteLine(token);
 
         Parser parser = new(tokens);
         List<Stmt> statements = parser.Parse();
@@ -56,7 +56,7 @@ internal class Program {
         if (_hadError) return;
 
         // Print out the AST for debugging purposes
-        AstPrinter printer = new();
+        // AstPrinter printer = new();
         // foreach (Stmt stmt in statements) Console.WriteLine($"Abstract syntax tree : {printer.GetAst(stmt.)}");
 
         interpreter.Interpret(statements);

@@ -5,6 +5,7 @@ internal abstract class Expr {
         T VisitBinaryExpr(Binary binary);
         T VisitUnaryExpr(Unary unary);
         T VisitLiteralExpr(Literal literal);
+        T VisitLogicalExpr(Logical logical);
         T VisitGroupingExpr(Grouping grouping);
         T VisitVariableExpr(Variable variable);
         T VisitAssignExpr(Assign assign);
@@ -49,6 +50,22 @@ internal abstract class Expr {
 
         public override T Accept<T>(IVisitor<T> visitor) {
             return visitor.VisitLiteralExpr(this);
+        }
+    }
+
+    public class Logical : Expr {
+        public Expr Right { get; private set; }
+        public Token Op { get; private set; }
+        public Expr Left { get; private set; }
+
+        public Logical(Expr right, Token op, Expr left) {
+            Right = right;
+            Op = op;
+            Left = left;
+        }
+
+        public override T Accept<T>(IVisitor<T> visitor) {
+            return visitor.VisitLogicalExpr(this);
         }
     }
 

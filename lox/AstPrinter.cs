@@ -47,4 +47,8 @@ internal class AstPrinter : Expr.IVisitor<string> {
     public string VisitAssignExpr(Assign assign) {
         throw new NotImplementedException();
     }
+
+    public string VisitLogicalExpr(Logical logical) {
+        throw new NotImplementedException();
+    }
 }

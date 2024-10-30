@@ -102,7 +102,6 @@ class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object> {
     }
 
     private bool IsTruthy(object? literal) {
-        System.Console.WriteLine(literal is null);
         if (literal is null) return false;
         if (literal is bool) return (bool)literal;
         if (literal is double && (double)literal == 0) return false;
@@ -167,6 +166,32 @@ class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object> {
         }
     }
 
+    public object VisitIfStmt(Stmt.If ifStatement) {
+        if (IsTruthy(ifStatement)) Execute(ifStatement.ThenBranch);
+        else if (ifStatement.ElseBranch is not null) Execute(ifStatement.ElseBranch);
+        return null;
+    }
+
+    public object VisitLogicalExpr(Expr.Logical logical) {
+        object left = Evaluate(logical.Left);
+
+        if (logical.Op.Type == OR) {
+            if (IsTruthy(left)) return left;
+        }
+        else {
+            if (!IsTruthy(left)) return left;
+        }
+
+        return Evaluate(logical.Right);
+    }
+
+    public object VisitWhileStmt(Stmt.While whileStatement) {
+        while (IsTruthy(Evaluate(whileStatement.Condition))) {
+            Execute(whileStatement.Body);
+        }
+
+        return null;
+    }
 
     #endregion
 }

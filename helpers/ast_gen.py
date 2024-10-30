@@ -2,6 +2,7 @@ ast_classes = [
     ["Binary", [["Expr", "left"], ["Token", "token"], ["Expr", "right"]]],
     ["Unary", [["Expr", "expression"], ["Token", "token"]]],
     ["Literal", [["object?", "value"]]],
+    ["Logical", [["Expr", "right"], ["Token", "op"], ["Expr", "left"]]],
     ["Grouping", [["Expr", "expression"]]],
     ["Variable", [["Token", "name"]]],
     ["Assign", [["Token", "name"], ["Expr", "value"]]],
@@ -13,6 +14,7 @@ stmt_classes = [
     ["Expression", [["Expr", "loxExpression"]]],
     ["Block", [["List<Stmt>", "statements"]]],
     ["Var", [["Token", "name"], ["Expr", "initialiser"]]],
+    ["While", [["Expr", "condition"], ["Stmt", "body"]]],
 ]
 
 

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Lox;
 
 internal abstract class Stmt {
@@ -7,6 +9,7 @@ internal abstract class Stmt {
         T VisitExpressionStmt(Expression expression);
         T VisitBlockStmt(Block block);
         T VisitVarStmt(Var var);
+        T VisitWhileStmt(While while);
     }
 
     public class Print : Stmt {
@@ -72,6 +75,20 @@ internal abstract class Stmt {
 
         public override T Accept<T>(IVisitor<T> visitor) {
             return visitor.VisitVarStmt(this);
+        }
+    }
+
+    public class While : Stmt {
+        public Expr Condition { get; private set; }
+        public Stmt Body { get; private set; }
+
+        public While(Expr condition, Stmt body) {
+            Condition = condition;
+            Body = body;
+        }
+
+        public override T Accept<T>(IVisitor<T> visitor) {
+            return visitor.VisitWhileStmt(this);
         }
     }
 

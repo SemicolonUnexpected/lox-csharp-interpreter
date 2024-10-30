@@ -34,7 +34,7 @@ internal class Lexer {
             case '(': AddToken(LEFT_PARENTHESIS); break;
             case ')': AddToken(RIGHT_PARENTHESIS); break;
             case '{': AddToken(LEFT_BRACE); break;
-            case '}': AddToken(RIGHT_PARENTHESIS); break;
+            case '}': AddToken(RIGHT_BRACE); break;
             case ',': AddToken(COMMA); break;
             case '.': AddToken(DOT); break;
             case '-': AddToken(MINUS); break;

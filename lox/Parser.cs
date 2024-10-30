@@ -24,7 +24,7 @@ internal class Parser {
 
     private Expr Expression() => Assignment();
     private Expr Assignment() {
-        Expr expression = Equality();
+        Expr expression = Or();
 
         if (Match(EQUAL)) {
             Token equal = Previous();
@@ -35,6 +35,28 @@ internal class Parser {
                 return new Expr.Assign(name, value);
             }
             Program.Error(equal, "Invalid assignment target");
+        }
+
+        return expression;
+    }
+    private Expr Or() {
+        Expr expression = And();
+
+        if (Match(OR)) {
+            Token op = Previous();
+            Expr right = And();
+            expression = new Expr.Logical(expression, op, right);
+        }
+
+        return expression;
+    }
+    private Expr And() {
+        Expr expression = Equality();
+
+        if (Match(AND)) {
+            Token op = Previous();
+            Expr right = Equality();
+            expression = new Expr.Logical(expression, op, right);
         }
 
         return expression;
@@ -107,7 +129,6 @@ internal class Parser {
         }
 
         if (Match(IDENTIFIER)) {
-            Console.WriteLine("Its an identifier! : ", Previous().Literal);
             return new Expr.Variable(Previous());
         }
 
@@ -165,6 +186,7 @@ internal class Parser {
 
     private Stmt Statement() {
         if (Match(PRINT)) return PrintStatement();
+        if (Match(WHILE)) return WhileStatement();
         if (Match(LEFT_BRACE)) return new Stmt.Block(Block());
         if (Match(IF)) return IfStatement();
 
@@ -172,7 +194,17 @@ internal class Parser {
     }
 
     private Stmt IfStatement() {
-        throw new NotImplementedException();
+        Consume(LEFT_PARENTHESIS, "Expected '(' after if.");
+        Expr condition = Expression();
+        Consume(RIGHT_PARENTHESIS, "Expected ')' after condition");
+
+        Stmt thenBranch = Statement();
+        Stmt elseBranch = null;
+        if (Match(ELSE)) {
+            elseBranch = Statement();
+        }
+
+        return new Stmt.If(condition, thenBranch, elseBranch);
     }
 
     private Stmt PrintStatement() {
@@ -192,7 +224,6 @@ internal class Parser {
     private Stmt Declaration() {
         try {
             if (Match(VAR)) {
-                System.Console.WriteLine("Found the VAR");
                 return VarDeclaration();
             }
 
@@ -206,7 +237,6 @@ internal class Parser {
 
     private Stmt VarDeclaration() {
         Token name = Consume(IDENTIFIER, "Expected variable name.");
-        System.Console.WriteLine(name);
 
         Expr initialiser = null;
         if (Match(EQUAL)) initialiser = Expression();
@@ -224,6 +254,15 @@ internal class Parser {
 
         Consume(RIGHT_BRACE, "Expect '}' after block");
         return statements;
+    }
+
+    private Stmt WhileStatement() {
+        Consume(LEFT_PARENTHESIS, "Expected '(' after while.");
+        Expr condition = Expression();
+        Consume(RIGHT_PARENTHESIS, "Expected ')' after while");
+
+        Stmt body = Statement();
+        return new Stmt.While(condition, body);
     }
 
     #endregion
